@@ -1,1 +1,1 @@
-export const SITE_URL = 'https://portfolio-next-rust-two.vercel.app'
+export { SITE_URL } from '@/content/profile'

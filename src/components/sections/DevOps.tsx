@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { m, useInView } from 'framer-motion'
 import { SiDocker, SiGitlab, SiLinux, SiKubernetes, SiNginx } from 'react-icons/si'
 import { Terminal, GitBranch, Package, Server, Cpu, Code2 } from 'lucide-react'
 import type { IconComponent } from '@/lib/icon-types'
@@ -98,14 +98,14 @@ export default function DevOps() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_80%,rgba(251,146,60,0.06),transparent)]" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <motion.div
+        <m.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
         >
           <div className="text-center mb-16">
-            <p className="section-number text-orange-400 mb-4">04. DEVOPS & INFRASTRUCTURE</p>
+            <p className="section-number text-orange-400 mb-4">06. DEVOPS & INFRASTRUCTURE</p>
             <h2 className="text-4xl font-bold mb-4">
               Code is just the beginning.
               <br />
@@ -115,7 +115,7 @@ export default function DevOps() {
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
               Beyond writing code, I understand what it takes to deploy, maintain, and scale
-              applications in production. DevOps isn't a separate job — it's part of how I build.
+              applications in production. DevOps isn&apos;t a separate job: it&apos;s part of how I build.
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export default function DevOps() {
             {devopsItems.map((item, i) => {
               const Icon = item.icon
               return (
-                <motion.div
+                <m.div
                   key={item.name}
                   initial={{ opacity: 0, y: 30 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -174,11 +174,11 @@ export default function DevOps() {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

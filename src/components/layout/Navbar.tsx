@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 const navLinks = [
   { label: 'About', href: '#about' },
-  { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
-  { label: 'DevOps', href: '#devops' },
-  { label: 'AI', href: '#ai' },
   { label: 'Experience', href: '#experience' },
+  { label: 'Research', href: '#research' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'DevOps', href: '#devops' },
   { label: 'Contact', href: '#contact' },
 ]
 
@@ -25,7 +25,7 @@ export default function Navbar() {
   }, [])
 
   return (
-    <motion.nav
+    <m.nav
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -37,24 +37,24 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <motion.a href="#" whileHover={{ scale: 1.05 }} className="flex items-center gap-1">
+          <m.a href="#" whileHover={{ scale: 1.05 }} className="flex items-center gap-1">
             <span className="text-lg font-bold gradient-text">AS</span>
             <span className="text-slate-600">.</span>
-          </motion.a>
+          </m.a>
 
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <motion.a
+              <m.a
                 key={link.label}
                 href={link.href}
                 whileHover={{ y: -1 }}
                 className="px-3 py-2 text-sm text-slate-500 hover:text-cyan-400 transition-colors duration-200 rounded-lg hover:bg-cyan-500/5"
               >
                 {link.label}
-              </motion.a>
+              </m.a>
             ))}
             <a
-              href="mailto:seneabdoulaye124@gmail.com"
+              href="#contact"
               className="ml-3 px-4 py-1.5 text-sm font-medium text-cyan-400 border border-cyan-400/40 rounded-lg hover:bg-cyan-400/10 transition-all duration-200"
             >
               Hire Me
@@ -75,7 +75,7 @@ export default function Navbar() {
 
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
+          <m.div
             id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -95,16 +95,16 @@ export default function Navbar() {
                 </a>
               ))}
               <a
-                href="mailto:seneabdoulaye124@gmail.com"
+                href="#contact"
                 className="mt-2 px-4 py-3 text-center text-sm font-medium text-cyan-400 border border-cyan-400/40 rounded-xl"
                 onClick={() => setMobileOpen(false)}
               >
                 Hire Me
               </a>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </m.nav>
   )
 }
