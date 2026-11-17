@@ -1,22 +1,24 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { m, useInView } from 'framer-motion'
 import { Code2, Server, Brain, GraduationCap, MapPin } from 'lucide-react'
 import Image from 'next/image'
+import { profile } from '@/content/profile'
 
+// Every value here can be checked against the CVs.
 const stats = [
-  { value: '1+', label: 'Years Experience' },
-  { value: '10+', label: 'Projects Shipped' },
-  { value: '20+', label: 'Technologies' },
-  { value: '100%', label: 'Remote Ready' },
+  { value: '~2 yrs', label: 'Industry experience' },
+  { value: 'M2', label: 'M.Sc. Software Engineering' },
+  { value: '2', label: 'Bachelor’s degrees' },
+  { value: 'FR · EN', label: 'Working languages' },
 ]
 
 const highlights = [
-  { icon: Code2, text: 'End-to-end product development', color: 'text-cyan-400' },
-  { icon: Server, text: 'Infrastructure & DevOps mindset', color: 'text-blue-400' },
-  { icon: Brain, text: 'Actively learning AI Engineering', color: 'text-violet-400' },
-  { icon: GraduationCap, text: "MSc Software Engineering — In Progress", color: 'text-green-400' },
+  { icon: Code2, text: 'End-to-end web development', color: 'text-cyan-400' },
+  { icon: Server, text: 'Production DevOps: Docker, CI/CD, GitOps', color: 'text-blue-400' },
+  { icon: Brain, text: 'Research focus: AI for Software Engineering & DevOps', color: 'text-violet-400' },
+  { icon: GraduationCap, text: 'M.Sc. Software Engineering: M2 in progress', color: 'text-green-400' },
 ]
 
 export default function About() {
@@ -26,7 +28,7 @@ export default function About() {
   return (
     <section id="about" className="py-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <m.div
           ref={ref}
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -37,27 +39,30 @@ export default function About() {
           <div>
             <p className="section-number text-cyan-400 mb-4">01. ABOUT ME</p>
             <h2 className="text-4xl font-bold mb-6 leading-tight">
-              Not just a developer.
+              I build it, ship it
               <br />
-              <span className="gradient-text">A full-spectrum engineer.</span>
+              <span className="gradient-text">and keep it running.</span>
             </h2>
             <div className="space-y-4 text-slate-400 leading-relaxed">
               <p>
-                I'm <span className="text-slate-200 font-medium">Abdoulaye Sène</span>, a Full Stack
-                Developer and DevOps Engineer based in Dakar, Senegal. I've built real-world
-                applications across fintech, education, hospitality, and transportation — taking
-                products from wireframe to production.
+                I&apos;m <span className="text-slate-200 font-medium">{profile.name}</span>, a
+                full-stack and DevOps developer based in Malika (Dakar), with {profile.experience}.
+                I now work as a freelancer, building websites and web applications for
+                organisations and businesses: a non-profit, a real estate firm, and e-commerce
+                platforms during my time at Labdevit.
               </p>
               <p>
-                My differentiator is the combination of{' '}
-                <span className="text-slate-200">software engineering depth</span> with an{' '}
-                <span className="text-slate-200">infrastructure-first mindset</span>. I don't just
-                write code — I think about deployment, scalability, and operations from day one.
+                What sets me apart is that I handle both{' '}
+                <span className="text-slate-200">the code and its operation</span>. At Labdevit I
+                deployed client applications on VPS servers with Docker, CI/CD pipelines, GitOps
+                (ArgoCD) and OpenTelemetry observability, so I think about deployment and
+                reliability from day one.
               </p>
               <p>
-                Currently pursuing my Master's in Software Engineering while actively building
-                AI-powered applications with CrewAI and LLMs, positioning myself for the next wave
-                of intelligent software.
+                In parallel, I&apos;m completing a{' '}
+                <span className="text-slate-200">Master&apos;s in Software Engineering</span> at
+                UN-CHK and preparing a PhD in Computer Science, focused on applying machine learning
+                to make software delivery and operations more reliable.
               </p>
             </div>
 
@@ -75,53 +80,41 @@ export default function About() {
 
             <div className="mt-6 flex items-center gap-2 text-slate-500 text-sm">
               <MapPin size={13} />
-              <span>Dakar, Senegal · Open to worldwide remote positions</span>
+              <span>{profile.location} · {profile.workMode}</span>
             </div>
           </div>
 
           {/* Right: photo + stats */}
           <div className="flex flex-col gap-5">
             {/* Profile photo */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex justify-center lg:justify-start"
             >
-              <motion.div
-                className="relative w-48 h-48 sm:w-56 sm:h-56"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                whileHover={{ scale: 1.04 }}
-              >
-                {/* Pulsing glow */}
-                <motion.div
-                  className="absolute -inset-3 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 blur-xl"
-                  animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                {/* Spinning gradient ring */}
-                <motion.div
-                  className="absolute -inset-[3px] rounded-2xl"
+              {/* Endless loops are pure CSS (globals.css); hover zoom is a CSS transition */}
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 anim-float transition-transform duration-300 hover:scale-[1.04]">
+                <div className="absolute -inset-3 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 blur-xl anim-glow" />
+                <div
+                  className="absolute -inset-[3px] rounded-2xl anim-spin-8"
                   style={{ background: 'conic-gradient(from 0deg, #06b6d4, #8b5cf6, #ec4899, #06b6d4)' }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                 />
                 <Image
                   src="/profile.jpeg"
-                  alt="Abdoulaye Sène"
+                  alt={profile.name}
                   fill
                   sizes="(min-width: 640px) 224px, 192px"
                   className="rounded-2xl object-cover object-top z-10"
                   style={{ maskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)' }}
                 />
-              </motion.div>
-            </motion.div>
+              </div>
+            </m.div>
 
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-4">
               {stats.map(({ value, label }, i) => (
-                <motion.div
+                <m.div
                   key={label}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -130,10 +123,10 @@ export default function About() {
                 >
                   <div className="text-3xl font-bold gradient-text mb-1">{value}</div>
                   <div className="text-slate-500 text-xs">{label}</div>
-                </motion.div>
+                </m.div>
               ))}
 
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.45 }}
@@ -141,21 +134,21 @@ export default function About() {
               >
                 <div>
                   <p className="text-xs text-slate-500 mb-0.5">GitHub Profile</p>
-                  <p className="text-slate-200 font-medium text-sm">@abdoulaye-96</p>
-                  <p className="text-xs text-slate-500 mt-1">Open source contributions & personal projects</p>
+                  <p className="text-slate-200 font-medium text-sm">{profile.githubHandle}</p>
+                  <p className="text-xs text-slate-500 mt-1">Personal, academic and team projects</p>
                 </div>
                 <a
-                  href="https://github.com/abdoulaye-96"
+                  href={profile.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 px-4 py-2 text-sm border border-slate-700 rounded-lg text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
                 >
                   View →
                 </a>
-              </motion.div>
+              </m.div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

@@ -31,16 +31,16 @@ export default function OpengraphImage() {
             marginBottom: 28,
           }}
         >
-          Full Stack Developer · DevOps Engineer
+          Full-Stack & DevOps Developer
         </div>
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 800, color: 'white' }}>
           Abdoulaye Sène
         </div>
         <div style={{ display: 'flex', fontSize: 34, color: '#94A3B8', marginTop: 28 }}>
-          Building scalable products end-to-end
+          Websites & web apps, from code to production
         </div>
-        <div style={{ display: 'flex', fontSize: 24, color: '#475569', marginTop: 48 }}>
-          Dakar, Senegal · Open to worldwide remote
+        <div style={{ display: 'flex', fontSize: 24, color: '#64748B', marginTop: 48 }}>
+          Freelance · Full-time · PhD 2027–2028 · Malika, Dakar
         </div>
       </div>
     ),

@@ -5,7 +5,7 @@ import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import MotionProvider from '@/components/providers/MotionProvider'
-import { SITE_URL } from '@/lib/constants'
+import { SITE_URL, profile } from '@/content/profile'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -21,28 +21,30 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'Abdoulaye Sène | Full Stack Developer & DevOps Engineer',
+  title: 'Abdoulaye Sène | Full-Stack & DevOps Developer',
   description:
-    'Full Stack Developer, DevOps Engineer, and AI Engineering Enthusiast based in Senegal. I build scalable applications from React frontends to Django/Node backends, containerized with Docker and deployed via CI/CD pipelines.',
+    'Full-stack & DevOps developer in Dakar, Senegal, with about 2 years of industry experience. Open to freelance projects, full-time roles and fully funded PhD positions in AI for Software Engineering & DevOps.',
   keywords: [
-    'Full Stack Developer',
-    'DevOps Engineer',
-    'AI Engineering',
-    'React',
+    'Full-Stack Developer',
+    'DevOps',
+    'Freelance web developer Senegal',
+    'Développeur web Dakar',
     'Next.js',
+    'React',
     'Django',
-    'Node.js',
+    'Spring Boot',
     'Docker',
     'Kubernetes',
-    'Senegal',
-    'Remote Developer',
+    'ArgoCD',
+    'AI for Software Engineering',
+    'PhD Computer Science',
     'Abdoulaye Sène',
   ],
   authors: [{ name: 'Abdoulaye Sène' }],
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: 'Abdoulaye Sène | Full Stack Developer & DevOps Engineer',
-    description: 'Building scalable products from pixel to production.',
+    title: 'Abdoulaye Sène | Full-Stack & DevOps Developer',
+    description: 'Websites and web apps from code to production. Open to freelance, full-time and PhD opportunities.',
     url: SITE_URL,
     siteName: 'Abdoulaye Sène',
     locale: 'en_US',
@@ -50,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Abdoulaye Sène | Full Stack Developer & DevOps Engineer',
-    description: 'Building scalable products from pixel to production.',
+    title: 'Abdoulaye Sène | Full-Stack & DevOps Developer',
+    description: 'Websites and web apps from code to production. Open to freelance, full-time and PhD opportunities.',
   },
   robots: { index: true, follow: true },
 }
@@ -61,12 +63,15 @@ const personJsonLd = {
   '@type': 'Person',
   name: 'Abdoulaye Sène',
   url: SITE_URL,
-  jobTitle: 'Full Stack Developer & DevOps Engineer',
-  address: { '@type': 'PostalAddress', addressLocality: 'Dakar', addressCountry: 'SN' },
-  sameAs: [
-    'https://github.com/abdoulaye-96',
-    'https://www.linkedin.com/in/abdoulaye-sene-707801203/',
+  jobTitle: 'Full-Stack & DevOps Developer',
+  address: { '@type': 'PostalAddress', addressLocality: 'Malika, Dakar', addressCountry: 'SN' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Université Numérique Cheikh Hamidou Kane (UN-CHK)' },
+    { '@type': 'CollegeOrUniversity', name: 'Université Professionnelle du Sénégal (UNIPRO)' },
   ],
+  knowsAbout: ['Full-stack web development', 'DevOps', 'GitOps', 'AI for Software Engineering'],
+  knowsLanguage: ['fr', 'en'],
+  sameAs: [profile.github, profile.linkedin],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

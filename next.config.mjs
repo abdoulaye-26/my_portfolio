@@ -6,6 +6,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'github-readme-stats.vercel.app' },
     ],
   },
+  // Old links to /cv.pdf (LinkedIn, emails) keep working and get the current professional CV.
+  async redirects() {
+    return [
+      { source: '/cv.pdf', destination: '/cv/abdoulaye-sene-cv-professional-en.pdf', permanent: false },
+    ]
+  },
   async headers() {
     return [
       {

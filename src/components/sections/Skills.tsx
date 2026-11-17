@@ -1,13 +1,13 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { m, useInView } from 'framer-motion'
 import {
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiTailwindcss,
   SiDjango, SiNodedotjs, SiFastapi, SiSpring,
   SiPostgresql, SiMongodb, SiMysql,
   SiDocker, SiGitlab, SiLinux, SiKubernetes, SiNginx, SiGit,
-  SiFigma,
+  SiFigma, SiAngular, SiFlutter, SiPrisma, SiLaravel,
 } from 'react-icons/si'
 import { Brain, Zap, GitBranch, Server } from 'lucide-react'
 import type { IconComponent } from '@/lib/icon-types'
@@ -18,7 +18,8 @@ interface Skill {
   name: string
   icon: IconComponent
   color: string
-  level: SkillLevel
+  /** Omitted when not self-assessed yet. */
+  level?: SkillLevel
 }
 
 interface Category {
@@ -30,7 +31,7 @@ interface Category {
 
 const categories: Category[] = [
   {
-    title: 'Frontend',
+    title: 'Frontend & Mobile',
     gradient: 'from-cyan-500 to-blue-500',
     glowClass: 'hover:border-cyan-500/30',
     skills: [
@@ -39,6 +40,8 @@ const categories: Category[] = [
       { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', level: 'Intermediate' },
       { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', level: 'Advanced' },
       { name: 'TailwindCSS', icon: SiTailwindcss, color: '#06B6D4', level: 'Advanced' },
+      { name: 'Angular', icon: SiAngular, color: '#DD0031' },
+      { name: 'Flutter (mobile)', icon: SiFlutter, color: '#02569B' },
     ],
   },
   {
@@ -51,6 +54,7 @@ const categories: Category[] = [
       { name: 'Express.js', icon: Server, color: '#9CA3AF', level: 'Advanced' },
       { name: 'FastAPI', icon: SiFastapi, color: '#009688', level: 'Learning' },
       { name: 'Spring Boot', icon: SiSpring, color: '#6DB33F', level: 'Learning' },
+      { name: 'Laravel', icon: SiLaravel, color: '#FF2D20' },
     ],
   },
   {
@@ -61,6 +65,7 @@ const categories: Category[] = [
       { name: 'PostgreSQL', icon: SiPostgresql, color: '#336791', level: 'Advanced' },
       { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 'Advanced' },
       { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 'Advanced' },
+      { name: 'Prisma ORM', icon: SiPrisma, color: '#A5B4FC' },
     ],
   },
   {
@@ -77,13 +82,13 @@ const categories: Category[] = [
     ],
   },
   {
-    title: 'AI & Emerging',
+    // Matches the academic CV: "Currently learning ML / DL (PyTorch)" + multi-agent LLM prototype.
+    title: 'AI & Research (learning)',
     gradient: 'from-pink-500 to-violet-500',
     glowClass: 'hover:border-pink-500/30',
     skills: [
-      { name: 'CrewAI Agents', icon: Brain, color: '#A78BFA', level: 'Learning' },
-      { name: 'LLM Applications', icon: Zap, color: '#F59E0B', level: 'Learning' },
-      { name: 'AI Engineering', icon: Server, color: '#C084FC', level: 'Learning' },
+      { name: 'Machine Learning (PyTorch)', icon: Brain, color: '#A78BFA', level: 'Learning' },
+      { name: 'LLM APIs & multi-agent pipelines', icon: Zap, color: '#F59E0B', level: 'Learning' },
     ],
   },
   {
@@ -110,14 +115,14 @@ export default function Skills() {
   return (
     <section id="skills" className="py-28 relative bg-[#0D0D14]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <m.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
         >
           <div className="text-center mb-16">
-            <p className="section-number text-cyan-400 mb-4">02. TECHNICAL EXPERTISE</p>
+            <p className="section-number text-cyan-400 mb-4">05. TECHNICAL EXPERTISE</p>
             <h2 className="text-4xl font-bold mb-4">
               Full-spectrum{' '}
               <span className="gradient-text">technical stack</span>
@@ -129,7 +134,7 @@ export default function Skills() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {categories.map((cat, i) => (
-              <motion.div
+              <m.div
                 key={cat.title}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -147,16 +152,18 @@ export default function Skills() {
                         <Icon className="w-4 h-4 shrink-0" style={{ color }} />
                         <span className="text-sm text-slate-300">{name}</span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${levelStyle[level]}`}>
-                        {level}
-                      </span>
+                      {level && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${levelStyle[level]}`}>
+                          {level}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

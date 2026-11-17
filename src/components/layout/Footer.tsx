@@ -1,5 +1,6 @@
 import { Mail } from 'lucide-react'
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa'
+import { profile, mailto } from '@/content/profile'
 
 export default function Footer() {
   return (
@@ -8,16 +9,16 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold gradient-text">AS</span>
-            <span className="text-slate-500 text-sm font-medium">Abdoulaye Sène</span>
+            <span className="text-slate-500 text-sm font-medium">{profile.name}</span>
           </div>
 
           <p className="text-slate-500 text-sm text-center">
-            Designed & built by Abdoulaye Sène · {new Date().getFullYear()}
+            Designed & built by {profile.name} · {new Date().getFullYear()}
           </p>
 
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/abdoulaye-96"
+              href={profile.github}
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 hover:text-white transition-colors"
@@ -26,7 +27,7 @@ export default function Footer() {
               <FaGithub size={18} />
             </a>
             <a
-              href="https://www.linkedin.com/in/abdoulaye-sene-707801203/"
+              href={profile.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 hover:text-blue-400 transition-colors"
@@ -35,7 +36,16 @@ export default function Footer() {
               <FaLinkedin size={18} />
             </a>
             <a
-              href="mailto:seneabdoulaye124@gmail.com"
+              href={profile.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-500 hover:text-green-400 transition-colors"
+              aria-label="WhatsApp"
+            >
+              <FaWhatsapp size={18} />
+            </a>
+            <a
+              href={mailto()}
               className="text-slate-500 hover:text-cyan-400 transition-colors"
               aria-label="Email"
             >
