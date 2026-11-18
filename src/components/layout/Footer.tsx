@@ -1,57 +1,45 @@
+'use client'
+
 import { Mail } from 'lucide-react'
 import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa'
 import { profile, mailto } from '@/content/profile'
+import { useI18n } from '@/i18n/LanguageProvider'
+import { format } from '@/components/ui/Rich'
 
 export default function Footer() {
+  const { t } = useI18n()
+
+  const links = [
+    { href: profile.github, label: 'GitHub', icon: FaGithub, external: true },
+    { href: profile.linkedin, label: 'LinkedIn', icon: FaLinkedin, external: true },
+    { href: profile.whatsapp, label: 'WhatsApp', icon: FaWhatsapp, external: true },
+    { href: mailto(), label: t.ui.email, icon: Mail, external: false },
+  ]
+
   return (
-    <footer className="border-t border-[#1E1E2E] py-10 bg-[#0B0B0F]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold gradient-text">AS</span>
-            <span className="text-slate-500 text-sm font-medium">{profile.name}</span>
-          </div>
+    <footer className="border-t border-line bg-surface-alt py-10">
+      <div className="container-page flex flex-col items-center justify-between gap-6 sm:flex-row">
+        <div className="flex items-center gap-2">
+          <span className="font-display text-lg font-bold gradient-text">AS</span>
+          <span className="text-sm font-medium text-subtle">{profile.name}</span>
+        </div>
 
-          <p className="text-slate-500 text-sm text-center">
-            Designed & built by {profile.name} · {new Date().getFullYear()}
-          </p>
+        <p className="text-center text-sm text-subtle">
+          {format(t.footer.credit, { name: profile.name, year: new Date().getFullYear() })}
+        </p>
 
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1">
+          {links.map(({ href, label, icon: Icon, external }) => (
             <a
-              href={profile.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 hover:text-white transition-colors"
-              aria-label="GitHub"
+              key={label}
+              href={href}
+              {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              className="icon-btn"
+              aria-label={label}
             >
-              <FaGithub size={18} />
+              <Icon size={18} aria-hidden />
             </a>
-            <a
-              href={profile.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 hover:text-blue-400 transition-colors"
-              aria-label="LinkedIn"
-            >
-              <FaLinkedin size={18} />
-            </a>
-            <a
-              href={profile.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 hover:text-green-400 transition-colors"
-              aria-label="WhatsApp"
-            >
-              <FaWhatsapp size={18} />
-            </a>
-            <a
-              href={mailto()}
-              className="text-slate-500 hover:text-cyan-400 transition-colors"
-              aria-label="Email"
-            >
-              <Mail size={18} />
-            </a>
-          </div>
+          ))}
         </div>
       </div>
     </footer>

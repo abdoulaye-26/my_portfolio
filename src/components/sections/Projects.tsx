@@ -1,131 +1,149 @@
 'use client'
 
-import { useId, useRef, useState } from 'react'
-import { m, useInView, AnimatePresence } from 'framer-motion'
-import { ExternalLink, ChevronDown, ChevronUp, ArrowRight, UserRound } from 'lucide-react'
+import { useId, useState } from 'react'
+import Image from 'next/image'
+import { m, AnimatePresence } from 'framer-motion'
+import { ExternalLink, ChevronDown, ArrowRight, UserRound } from 'lucide-react'
 import { FaGithub } from 'react-icons/fa'
 import { projects, type Project, type ProjectStatus } from '@/content/projects'
 import { profile } from '@/content/profile'
+import { useI18n } from '@/i18n/LanguageProvider'
+import { format } from '@/components/ui/Rich'
+import Reveal from '@/components/ui/Reveal'
+import SectionHeader from '@/components/ui/SectionHeader'
 
 const statusStyle: Record<ProjectStatus, string> = {
-  'Live': 'bg-green-500/15 text-green-400 border-green-500/30',
-  'In Progress': 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+  live: 'bg-emerald-500 text-white',
+  inProgress: 'bg-amber-400 text-amber-950',
+}
+
+/** Cover: the real screenshot if there is one, otherwise a generated gradient cover. */
+function ProjectCover({ project, title }: { project: Project; title: string }) {
+  return (
+    <div className="relative aspect-[16/9] overflow-hidden border-b border-line">
+      {project.image ? (
+        <Image
+          src={project.image}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 560px, 100vw"
+          className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+        />
+      ) : (
+        <div
+          aria-hidden
+          className={`absolute inset-0 bg-gradient-to-br ${project.gradient} transition-transform duration-500 group-hover:scale-[1.04]`}
+        >
+          {/* Decorative grid + soft light, so each cover feels designed, not empty */}
+          <div className="absolute inset-0 opacity-25 bg-[linear-gradient(rgba(255,255,255,.25)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.25)_1px,transparent_1px)] bg-[size:28px_28px]" />
+          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/35 to-transparent" />
+          <div className="absolute inset-0 flex flex-col justify-end p-5">
+            <span className="font-display text-2xl font-bold leading-tight text-white drop-shadow-sm sm:text-3xl">
+              {title}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const { t } = useI18n()
+  const text = t.projects.items[project.id]
+  const githubLabel = text.githubLabel ?? t.projects.githubRepo
   const [open, setOpen] = useState(false)
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
   const panelId = useId()
 
   return (
-    <m.article
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: (index % 2) * 0.1 }}
-      className="card overflow-hidden hover:border-slate-600/50 transition-all duration-300 flex flex-col"
+    <Reveal
+      as="article"
+      delay={(index % 2) * 0.08}
+      className="card group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lift"
     >
-      <div className={`h-1 w-full bg-gradient-to-r ${project.gradient}`} />
+      <div className="relative">
+        <ProjectCover project={project} title={text.title} />
+        {project.status && (
+          <span
+            className={`absolute left-4 top-4 rounded-full px-2.5 py-1 text-xs font-semibold shadow-card ${statusStyle[project.status]}`}
+          >
+            {t.projects.status[project.status]}
+          </span>
+        )}
+      </div>
 
-      <div className="p-6 flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-              <h3 className="text-xl font-bold text-white">{project.title}</h3>
-              {project.status && (
-                <span className={`text-xs px-2 py-0.5 rounded-full border ${statusStyle[project.status]}`}>
-                  {project.status}
-                </span>
-              )}
-            </div>
-            <p className="text-slate-400 text-sm">{project.tagline}</p>
-            <p className="text-slate-500 text-xs mt-0.5 font-mono">{project.type}</p>
-          </div>
-          <div className="flex gap-1.5 shrink-0 ml-3">
-            {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-slate-500 hover:text-white transition-colors"
-                aria-label={`${project.title}: ${project.githubLabel ?? 'GitHub repository'}`}
-                title={project.githubLabel ?? 'GitHub repository'}
-              >
-                <FaGithub size={17} />
-              </a>
-            )}
-            {project.demo && (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-slate-500 hover:text-cyan-400 transition-colors"
-                aria-label={`${project.title}: live site`}
-              >
-                <ExternalLink size={17} />
-              </a>
-            )}
-          </div>
-        </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-xl font-bold">{text.title}</h3>
+        <p className="mt-1 text-sm text-muted">{text.tagline}</p>
+        <p className="mt-0.5 font-mono text-xs text-subtle">{text.type}</p>
 
         {/* Role: what recruiters and clients look for first */}
-        <div className="mb-4 flex items-start gap-2 rounded-lg bg-white/[0.03] border border-white/[0.07] px-3 py-2">
-          <UserRound size={15} className="text-cyan-400 mt-0.5 shrink-0" />
+        <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5">
+          <UserRound size={15} className="mt-0.5 shrink-0 text-primary" aria-hidden />
           <div className="text-sm">
-            <span className="text-slate-500">My role: </span>
-            <span className="text-slate-200">{project.role}</span>
-            <p className="text-xs text-slate-500 mt-0.5">{project.context}</p>
+            <span className="text-subtle">{t.projects.myRole} </span>
+            <span className="font-medium text-fg">{text.role}</span>
+            <p className="mt-0.5 text-xs text-subtle">{text.context}</p>
           </div>
         </div>
 
-        {/* Problem */}
-        <div className="mb-4">
-          <p className="text-xs font-mono text-cyan-500 uppercase tracking-wider mb-1.5">Problem</p>
-          <p className="text-sm text-slate-400 leading-relaxed">{project.problem}</p>
+        <div className="mt-4">
+          <p className="eyebrow mb-1.5">{t.projects.problem}</p>
+          <p className="text-sm leading-relaxed text-muted">{text.problem}</p>
         </div>
 
-        {/* Stack badges */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        {/* Tech-stack badges: a small dot in the technology's brand colour */}
+        <ul className="mt-4 flex flex-wrap gap-1.5">
           {project.stack.map((tech) => (
-            <span
-              key={tech.name}
-              className="text-xs px-2 py-1 rounded-md font-mono"
-              style={{
-                backgroundColor: `${tech.color}15`,
-                color: tech.color,
-                border: `1px solid ${tech.color}30`,
-              }}
-            >
+            <li key={tech.name} className="chip gap-1.5 font-mono text-fg/80">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: tech.color }} aria-hidden />
               {tech.name}
-            </span>
+            </li>
           ))}
-        </div>
+        </ul>
 
         {/* Actions */}
-        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2">
-          <button
-            type="button"
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-            aria-controls={panelId}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-cyan-400 transition-colors"
-          >
-            {open ? 'Hide' : 'View'} case study
-            {open ? <ChevronUp size={15} aria-hidden /> : <ChevronDown size={15} aria-hidden />}
-          </button>
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-6">
           {project.demo && (
             <a
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              aria-label={format(t.projects.liveSiteLabel, { title: text.title })}
+              className="btn-primary px-4 py-2"
             >
-              Visit live site
+              {t.projects.visitSite}
               <ExternalLink size={14} aria-hidden />
             </a>
           )}
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${text.title}: ${githubLabel}`}
+              title={githubLabel}
+              className="btn-secondary px-4 py-2"
+            >
+              <FaGithub size={15} aria-hidden />
+              GitHub
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-controls={panelId}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-muted transition-colors hover:text-primary"
+          >
+            {open ? t.projects.hideCaseStudy : t.projects.showCaseStudy}
+            <ChevronDown
+              size={15}
+              className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
         </div>
 
         <AnimatePresence initial={false}>
@@ -138,41 +156,41 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="mt-4 pt-4 border-t border-[#1E1E2E] space-y-4">
+              <div className="mt-4 space-y-4 border-t border-line pt-4">
                 <div>
-                  <p className="text-xs font-mono text-green-500 uppercase tracking-wider mb-1.5">Solution</p>
-                  <p className="text-sm text-slate-400 leading-relaxed">{project.solution}</p>
+                  <p className="eyebrow mb-1.5">{t.projects.solution}</p>
+                  <p className="text-sm leading-relaxed text-muted">{text.solution}</p>
                 </div>
-                {project.features && (
+                {text.features && (
                   <div>
-                    <p className="text-xs font-mono text-blue-400 uppercase tracking-wider mb-1.5">Key Features</p>
+                    <p className="eyebrow mb-1.5">{t.projects.features}</p>
                     <ul className="space-y-1.5">
-                      {project.features.map((f) => (
-                        <li key={f} className="text-sm text-slate-400 flex items-start gap-2">
-                          <span className="text-cyan-600 mt-0.5 shrink-0" aria-hidden>→</span>
+                      {text.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-muted">
+                          <span className="mt-0.5 shrink-0 text-accent" aria-hidden>→</span>
                           {f}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-                {project.challenges && (
+                {text.challenges && (
                   <div>
-                    <p className="text-xs font-mono text-orange-400 uppercase tracking-wider mb-1.5">Technical Challenges</p>
+                    <p className="eyebrow mb-1.5">{t.projects.challenges}</p>
                     <ul className="space-y-1.5">
-                      {project.challenges.map((c) => (
-                        <li key={c} className="text-sm text-slate-400 flex items-start gap-2">
-                          <span className="text-orange-500 mt-0.5 shrink-0" aria-hidden>⚡</span>
+                      {text.challenges.map((c) => (
+                        <li key={c} className="flex items-start gap-2 text-sm text-muted">
+                          <span className="mt-0.5 shrink-0 text-accent" aria-hidden>→</span>
                           {c}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
-                {project.outcome && (
+                {text.outcome && (
                   <div>
-                    <p className="text-xs font-mono text-violet-400 uppercase tracking-wider mb-1.5">Outcome</p>
-                    <p className="text-sm text-slate-400 leading-relaxed">{project.outcome}</p>
+                    <p className="eyebrow mb-1.5">{t.projects.outcome}</p>
+                    <p className="text-sm leading-relaxed text-muted">{text.outcome}</p>
                   </div>
                 )}
               </div>
@@ -180,63 +198,32 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           )}
         </AnimatePresence>
       </div>
-    </m.article>
+    </Reveal>
   )
 }
 
 export default function Projects() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t } = useI18n()
 
   return (
-    <section id="projects" className="py-28 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <m.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-16"
-        >
-          <p className="section-number text-cyan-400 mb-4">02. FEATURED PROJECTS</p>
-          <h2 className="text-4xl font-bold mb-4">
-            Work I&apos;ve{' '}
-            <span className="gradient-text">built & shipped</span>
-          </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Freelance sites, client projects from my time at Labdevit, and team projects. Each card
-            states my exact role. Open <span className="text-slate-300">View case study</span> for
-            the details.
-          </p>
-        </m.div>
+    <section id="projects" className="section">
+      <div className="container-page">
+        <SectionHeader eyebrow={t.projects.eyebrow} title={t.projects.title} intro={t.projects.intro} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
           {projects.map((p, i) => (
             <ProjectCard key={p.id} project={p} index={i} />
           ))}
         </div>
 
-        {/* GitHub CTA */}
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-12 text-center"
-        >
-          <p className="text-slate-500 text-sm mb-4">More projects and experiments on GitHub.</p>
-          <m.a
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2.5 px-6 py-3 border border-slate-700 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-400 rounded-xl transition-all duration-200 text-sm font-medium"
-          >
-            <FaGithub size={18} />
-            See all my projects on GitHub
-            <ArrowRight size={15} />
-          </m.a>
-        </m.div>
+        <Reveal className="mt-14 text-center">
+          <p className="mb-4 text-sm text-subtle">{t.projects.moreOnGithub}</p>
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3">
+            <FaGithub size={18} aria-hidden />
+            {t.projects.allOnGithub}
+            <ArrowRight size={15} aria-hidden />
+          </a>
+        </Reveal>
       </div>
     </section>
   )

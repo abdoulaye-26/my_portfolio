@@ -1,23 +1,34 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { m, useInView } from 'framer-motion'
+import { useState } from 'react'
 import { Mail, MapPin, Copy, CheckCircle2, FileText, Rocket, Briefcase, GraduationCap, Check } from 'lucide-react'
 import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa'
-import { profile, cvs, mailto, services } from '@/content/profile'
+import { profile, cvs, mailto, type CvKind } from '@/content/profile'
+import { useI18n } from '@/i18n/LanguageProvider'
+import { languageNames, locales } from '@/i18n/config'
+import type { Dictionary } from '@/locales'
+import Reveal from '@/components/ui/Reveal'
+import SectionHeader from '@/components/ui/SectionHeader'
 
-// Pre-filled email subjects so each audience lands in a clear thread.
-const intents = [
-  { icon: Rocket, label: 'Start a project', subject: 'Project inquiry', className: 'border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10' },
-  { icon: Briefcase, label: 'Job opportunity', subject: 'Job opportunity', className: 'border-blue-500/30 text-blue-300 hover:bg-blue-500/10' },
-  { icon: GraduationCap, label: 'PhD / research position', subject: 'PhD / research position', className: 'border-violet-500/30 text-violet-300 hover:bg-violet-500/10' },
+// Pre-filled email subjects (translated) so each audience lands in a clear thread.
+const intents: { id: keyof Dictionary['contact']['intents']; icon: typeof Rocket }[] = [
+  { id: 'project', icon: Rocket },
+  { id: 'job', icon: Briefcase },
+  { id: 'phd', icon: GraduationCap },
 ]
+
+const channels = [
+  { icon: FaWhatsapp, label: 'WhatsApp', sub: profile.phoneDisplay, href: profile.whatsapp },
+  { icon: FaLinkedin, label: 'LinkedIn', sub: profile.linkedinHandle, href: profile.linkedin },
+  { icon: FaGithub, label: 'GitHub', sub: profile.githubHandle, href: profile.github },
+]
+
+const cvKinds: CvKind[] = ['professional', 'academic']
 
 type CopyState = 'idle' | 'copied' | 'failed'
 
 export default function Contact() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t, locale } = useI18n()
   const [copyState, setCopyState] = useState<CopyState>('idle')
 
   const copy = async () => {
@@ -32,146 +43,126 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-28 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.06),transparent)]" />
+    <section id="contact" className="section overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgb(var(--primary)/0.1),transparent)]"
+      />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative">
-        <m.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="text-center">
-            <p className="section-number text-cyan-400 mb-4">07. GET IN TOUCH</p>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-              Let&apos;s <span className="gradient-text">work together</span>
-            </h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-              Open to freelance projects, full-time roles and fully funded PhD positions, in Senegal
-              or internationally, on-site or remote. Pick what fits and send me an email.
-            </p>
+      <div className="container-page relative max-w-5xl">
+        <SectionHeader eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} />
 
-            {/* Intent buttons */}
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 mb-10">
-              {intents.map(({ icon: Icon, label, subject, className }) => (
-                <a
-                  key={label}
-                  href={mailto(subject)}
-                  className={`inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border text-sm font-medium transition-colors ${className}`}
-                >
-                  <Icon size={16} aria-hidden />
-                  {label}
-                </a>
-              ))}
-            </div>
+        <Reveal className="text-center">
+          {/* Intent buttons */}
+          <div className="mb-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            {intents.map(({ id, icon: Icon }) => (
+              <a key={id} href={mailto(t.contact.intents[id].subject)} className="btn-secondary px-5 py-3">
+                <Icon size={16} className="text-primary" aria-hidden />
+                {t.contact.intents[id].label}
+              </a>
+            ))}
+          </div>
 
-            {/* Email */}
-            <div className="mb-8">
-              <div className="inline-flex flex-wrap items-center justify-center gap-2">
-                <a
-                  href={mailto()}
-                  className="inline-flex items-center gap-3 px-6 py-4 bg-cyan-500/[0.08] border border-cyan-500/30 rounded-2xl text-cyan-400 hover:bg-cyan-500/[0.14] hover:border-cyan-500/50 transition-all duration-200"
-                >
-                  <Mail size={19} aria-hidden />
-                  <span className="font-mono text-sm sm:text-base break-all">{profile.email}</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={copy}
-                  className="p-4 rounded-2xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
-                  aria-label="Copy email address"
-                >
-                  {copyState === 'copied' ? (
-                    <CheckCircle2 size={18} className="text-green-400" aria-hidden />
-                  ) : (
-                    <Copy size={18} aria-hidden />
-                  )}
-                </button>
-              </div>
-              {/* Always mounted so screen readers announce changes */}
-              <p className="text-xs mt-2 min-h-[1rem]" role="status" aria-live="polite">
-                {copyState === 'copied' && <span className="text-green-400">Email copied to clipboard.</span>}
-                {copyState === 'failed' && (
-                  <span className="text-amber-400">Couldn&apos;t copy automatically. Please select the address above.</span>
+          {/* Email */}
+          <div className="mb-8">
+            <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2">
+              <a href={mailto()} className="btn-primary min-w-0 px-6 py-4">
+                <Mail size={19} aria-hidden />
+                <span className="break-all font-mono text-sm sm:text-base">{profile.email}</span>
+              </a>
+              <button
+                type="button"
+                onClick={copy}
+                className="icon-btn h-[52px] w-[52px] rounded-xl border border-line bg-surface"
+                aria-label={t.contact.copyEmail}
+                title={t.contact.copyEmail}
+              >
+                {copyState === 'copied' ? (
+                  <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400" aria-hidden />
+                ) : (
+                  <Copy size={18} aria-hidden />
                 )}
-              </p>
+              </button>
             </div>
+            {/* Always mounted so screen readers announce changes */}
+            <p className="mt-2 min-h-[1rem] text-xs" role="status" aria-live="polite">
+              {copyState === 'copied' && (
+                <span className="text-emerald-700 dark:text-emerald-400">{t.contact.copied}</span>
+              )}
+              {copyState === 'failed' && (
+                <span className="text-amber-700 dark:text-amber-400">{t.contact.copyFailed}</span>
+              )}
+            </p>
+          </div>
 
-            {/* Other channels */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
-              {[
-                { icon: FaWhatsapp, label: 'WhatsApp', sub: profile.phoneDisplay, href: profile.whatsapp, hover: 'hover:border-green-500/40 hover:text-green-400' },
-                { icon: FaLinkedin, label: 'LinkedIn', sub: 'in/abdoulaye-sene-707801203', href: profile.linkedin, hover: 'hover:border-blue-500/40 hover:text-blue-400' },
-                { icon: FaGithub, label: 'GitHub', sub: profile.githubHandle, href: profile.github, hover: 'hover:border-slate-500/50 hover:text-white' },
-              ].map(({ icon: Icon, label, sub, href, hover }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-2.5 px-5 py-3 card text-slate-400 text-sm transition-all duration-200 ${hover}`}
-                >
-                  <Icon size={17} aria-hidden />
-                  <span className="text-left">
-                    <span className="block font-medium">{label}</span>
-                    <span className="block text-xs text-slate-500">{sub}</span>
-                  </span>
-                </a>
+          {/* Other channels */}
+          <div className="mb-14 flex flex-wrap items-center justify-center gap-3">
+            {channels.map(({ icon: Icon, label, sub, href }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card flex items-center gap-3 px-5 py-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40"
+              >
+                <Icon size={18} className="text-fg" aria-hidden />
+                <span>
+                  <span className="block text-sm font-medium text-fg">{label}</span>
+                  <span className="block text-xs text-subtle">{sub}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Services + CVs */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <Reveal className="card p-6">
+            <h3 className="mb-4 text-lg font-semibold">{t.contact.servicesTitle}</h3>
+            <ul className="space-y-2">
+              {t.contact.services.map((s) => (
+                <li key={s} className="flex items-start gap-2 text-sm text-muted">
+                  <Check size={15} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.08} className="card p-6">
+            <h3 className="mb-4 text-lg font-semibold">{t.contact.cvTitle}</h3>
+            <div className="space-y-5">
+              {cvKinds.map((kind) => (
+                <div key={kind}>
+                  <p className="text-sm font-medium text-fg">{t.contact.cvs[kind].label}</p>
+                  <p className="mb-2 text-xs text-subtle">{t.contact.cvs[kind].audience}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Current language first */}
+                    {[locale, ...locales.filter((l) => l !== locale)].map((l) => (
+                      <a
+                        key={l}
+                        href={cvs[kind][l]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        hrefLang={l}
+                        lang={l}
+                        className="btn-secondary px-3 py-1.5 font-medium"
+                      >
+                        <FileText size={14} aria-hidden /> {languageNames[l]}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
+          </Reveal>
+        </div>
 
-          {/* Services + CVs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-            <div className="card p-6">
-              <h3 className="font-semibold text-slate-200 mb-4">What I can do for your business</h3>
-              <ul className="space-y-2">
-                {services.map((s) => (
-                  <li key={s} className="flex items-start gap-2 text-sm text-slate-400">
-                    <Check size={15} className="text-cyan-400 mt-0.5 shrink-0" aria-hidden />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="card p-6">
-              <h3 className="font-semibold text-slate-200 mb-4">Download my CV</h3>
-              <div className="space-y-5">
-                {Object.values(cvs).map((cv) => (
-                  <div key={cv.label}>
-                    <p className="text-sm text-slate-200">{cv.label}</p>
-                    <p className="text-xs text-slate-500 mb-2">{cv.audience}</p>
-                    <div className="flex gap-2">
-                      <a
-                        href={cv.en}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:border-cyan-500/50 hover:text-cyan-400 transition-colors"
-                      >
-                        <FileText size={14} aria-hidden /> English
-                      </a>
-                      <a
-                        href={cv.fr}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        lang="fr"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 text-sm text-slate-300 hover:border-cyan-500/50 hover:text-cyan-400 transition-colors"
-                      >
-                        <FileText size={14} aria-hidden /> Français
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 flex items-center justify-center gap-1.5 text-slate-500 text-sm">
-            <MapPin size={13} aria-hidden />
-            <span>{profile.location} · {profile.workMode}</span>
-          </div>
-        </m.div>
+        <p className="mt-10 flex items-start justify-center gap-1.5 text-center text-sm text-subtle">
+          <MapPin size={14} className="mt-0.5 shrink-0" aria-hidden />
+          <span>
+            {t.profile.location} · {t.profile.workMode}
+          </span>
+        </p>
       </div>
     </section>
   )

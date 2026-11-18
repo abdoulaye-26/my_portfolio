@@ -1,7 +1,5 @@
 'use client'
 
-import { useRef } from 'react'
-import { m, useInView } from 'framer-motion'
 import {
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiTailwindcss,
   SiDjango, SiNodedotjs, SiFastapi, SiSpring,
@@ -9,161 +7,146 @@ import {
   SiDocker, SiGitlab, SiLinux, SiKubernetes, SiNginx, SiGit,
   SiFigma, SiAngular, SiFlutter, SiPrisma, SiLaravel,
 } from 'react-icons/si'
-import { Brain, Zap, GitBranch, Server } from 'lucide-react'
+import { Brain, Zap, GitBranch, Server, Layout, Database, Cloud, Wrench, Sparkles } from 'lucide-react'
 import type { IconComponent } from '@/lib/icon-types'
+import { useI18n } from '@/i18n/LanguageProvider'
+import type { Dictionary } from '@/locales'
+import Reveal from '@/components/ui/Reveal'
+import SectionHeader from '@/components/ui/SectionHeader'
 
-type SkillLevel = 'Advanced' | 'Intermediate' | 'Learning'
+type SkillLevel = 'advanced' | 'intermediate' | 'learning'
 
 interface Skill {
+  /** Tech names are not translated… */
   name: string
+  /** …except the few descriptive ones, looked up in t.skills.names. */
+  nameKey?: keyof Dictionary['skills']['names']
   icon: IconComponent
-  color: string
+  /** Brand colour. `null` = use the text colour (logos that are black/white, e.g. Next.js). */
+  color: string | null
   /** Omitted when not self-assessed yet. */
   level?: SkillLevel
 }
 
 interface Category {
-  title: string
-  gradient: string
-  glowClass: string
+  id: keyof Dictionary['skills']['categories']
+  icon: IconComponent
   skills: Skill[]
 }
 
 const categories: Category[] = [
   {
-    title: 'Frontend & Mobile',
-    gradient: 'from-cyan-500 to-blue-500',
-    glowClass: 'hover:border-cyan-500/30',
+    id: 'frontend',
+    icon: Layout,
     skills: [
-      { name: 'React', icon: SiReact, color: '#61DAFB', level: 'Advanced' },
-      { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff', level: 'Advanced' },
-      { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', level: 'Intermediate' },
-      { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', level: 'Advanced' },
-      { name: 'TailwindCSS', icon: SiTailwindcss, color: '#06B6D4', level: 'Advanced' },
+      { name: 'React', icon: SiReact, color: '#61DAFB', level: 'advanced' },
+      { name: 'Next.js', icon: SiNextdotjs, color: null, level: 'advanced' },
+      { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', level: 'intermediate' },
+      { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', level: 'advanced' },
+      { name: 'TailwindCSS', icon: SiTailwindcss, color: '#06B6D4', level: 'advanced' },
       { name: 'Angular', icon: SiAngular, color: '#DD0031' },
-      { name: 'Flutter (mobile)', icon: SiFlutter, color: '#02569B' },
+      { name: 'Flutter (mobile)', nameKey: 'flutter', icon: SiFlutter, color: '#02569B' },
     ],
   },
   {
-    title: 'Backend & APIs',
-    gradient: 'from-blue-500 to-violet-500',
-    glowClass: 'hover:border-blue-500/30',
+    id: 'backend',
+    icon: Server,
     skills: [
-      { name: 'Django / DRF', icon: SiDjango, color: '#44B78B', level: 'Advanced' },
-      { name: 'Node.js', icon: SiNodedotjs, color: '#339933', level: 'Advanced' },
-      { name: 'Express.js', icon: Server, color: '#9CA3AF', level: 'Advanced' },
-      { name: 'FastAPI', icon: SiFastapi, color: '#009688', level: 'Learning' },
-      { name: 'Spring Boot', icon: SiSpring, color: '#6DB33F', level: 'Learning' },
+      { name: 'Django / DRF', icon: SiDjango, color: '#44B78B', level: 'advanced' },
+      { name: 'Node.js', icon: SiNodedotjs, color: '#339933', level: 'advanced' },
+      { name: 'Express.js', icon: Server, color: null, level: 'advanced' },
+      { name: 'FastAPI', icon: SiFastapi, color: '#009688', level: 'learning' },
+      { name: 'Spring Boot', icon: SiSpring, color: '#6DB33F', level: 'learning' },
       { name: 'Laravel', icon: SiLaravel, color: '#FF2D20' },
     ],
   },
   {
-    title: 'Databases',
-    gradient: 'from-violet-500 to-purple-500',
-    glowClass: 'hover:border-violet-500/30',
+    id: 'databases',
+    icon: Database,
     skills: [
-      { name: 'PostgreSQL', icon: SiPostgresql, color: '#336791', level: 'Advanced' },
-      { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 'Advanced' },
-      { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 'Advanced' },
-      { name: 'Prisma ORM', icon: SiPrisma, color: '#A5B4FC' },
+      { name: 'PostgreSQL', icon: SiPostgresql, color: '#336791', level: 'advanced' },
+      { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 'advanced' },
+      { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 'advanced' },
+      { name: 'Prisma ORM', icon: SiPrisma, color: null },
     ],
   },
   {
-    title: 'DevOps & Infra',
-    gradient: 'from-orange-500 to-amber-500',
-    glowClass: 'hover:border-orange-500/30',
+    id: 'devops',
+    icon: Cloud,
     skills: [
-      { name: 'Docker', icon: SiDocker, color: '#2496ED', level: 'Advanced' },
-      { name: 'GitLab CI/CD', icon: SiGitlab, color: '#FCA121', level: 'Intermediate' },
-      { name: 'Linux / VPS', icon: SiLinux, color: '#FCC624', level: 'Intermediate' },
-      { name: 'Nginx', icon: SiNginx, color: '#009900', level: 'Intermediate' },
-      { name: 'ArgoCD', icon: GitBranch, color: '#EF7B4D', level: 'Learning' },
-      { name: 'Kubernetes', icon: SiKubernetes, color: '#326CE5', level: 'Learning' },
+      { name: 'Docker', icon: SiDocker, color: '#2496ED', level: 'advanced' },
+      { name: 'GitLab CI/CD', icon: SiGitlab, color: '#FCA121', level: 'intermediate' },
+      { name: 'Linux / VPS', icon: SiLinux, color: null, level: 'intermediate' },
+      { name: 'Nginx', icon: SiNginx, color: '#009900', level: 'intermediate' },
+      { name: 'ArgoCD', icon: GitBranch, color: '#EF7B4D', level: 'learning' },
+      { name: 'Kubernetes', icon: SiKubernetes, color: '#326CE5', level: 'learning' },
     ],
   },
   {
     // Matches the academic CV: "Currently learning ML / DL (PyTorch)" + multi-agent LLM prototype.
-    title: 'AI & Research (learning)',
-    gradient: 'from-pink-500 to-violet-500',
-    glowClass: 'hover:border-pink-500/30',
+    id: 'ai',
+    icon: Sparkles,
     skills: [
-      { name: 'Machine Learning (PyTorch)', icon: Brain, color: '#A78BFA', level: 'Learning' },
-      { name: 'LLM APIs & multi-agent pipelines', icon: Zap, color: '#F59E0B', level: 'Learning' },
+      { name: 'Machine Learning (PyTorch)', nameKey: 'ml', icon: Brain, color: '#A78BFA', level: 'learning' },
+      { name: 'LLM APIs & multi-agent pipelines', nameKey: 'llm', icon: Zap, color: '#F59E0B', level: 'learning' },
     ],
   },
   {
-    title: 'Tools & Design',
-    gradient: 'from-green-500 to-teal-500',
-    glowClass: 'hover:border-green-500/30',
+    id: 'tools',
+    icon: Wrench,
     skills: [
-      { name: 'Git', icon: SiGit, color: '#F05032', level: 'Advanced' },
-      { name: 'Figma', icon: SiFigma, color: '#F24E1E', level: 'Intermediate' },
+      { name: 'Git', icon: SiGit, color: '#F05032', level: 'advanced' },
+      { name: 'Figma', icon: SiFigma, color: '#F24E1E', level: 'intermediate' },
     ],
   },
 ]
 
+// Same hue family for all levels, getting lighter as the level goes down.
 const levelStyle: Record<SkillLevel, string> = {
-  Advanced: 'bg-cyan-500/15 text-cyan-400',
-  Intermediate: 'bg-blue-500/15 text-blue-400',
-  Learning: 'bg-violet-500/15 text-violet-400',
+  advanced: 'bg-primary-solid text-white',
+  intermediate: 'bg-primary/15 text-primary',
+  learning: 'border border-line text-subtle',
 }
 
 export default function Skills() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t } = useI18n()
 
   return (
-    <section id="skills" className="py-28 relative bg-[#0D0D14]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <m.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="text-center mb-16">
-            <p className="section-number text-cyan-400 mb-4">05. TECHNICAL EXPERTISE</p>
-            <h2 className="text-4xl font-bold mb-4">
-              Full-spectrum{' '}
-              <span className="gradient-text">technical stack</span>
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              From UI components to Kubernetes manifests — built for end-to-end product delivery.
-            </p>
-          </div>
+    <section id="skills" className="section">
+      <div className="container-page">
+        <SectionHeader eyebrow={t.skills.eyebrow} title={t.skills.title} intro={t.skills.intro} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {categories.map((cat, i) => (
-              <m.div
-                key={cat.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`card p-6 transition-all duration-300 ${cat.glowClass}`}
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className={`h-1 w-8 rounded-full bg-gradient-to-r ${cat.gradient}`} />
-                  <h3 className="font-semibold text-slate-200 text-sm">{cat.title}</h3>
-                </div>
-                <div className="space-y-3">
-                  {cat.skills.map(({ name, icon: Icon, color, level }) => (
-                    <div key={name} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-4 h-4 shrink-0" style={{ color }} />
-                        <span className="text-sm text-slate-300">{name}</span>
-                      </div>
-                      {level && (
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${levelStyle[level]}`}>
-                          {level}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </m.div>
-            ))}
-          </div>
-        </m.div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {categories.map((cat, i) => (
+            <Reveal
+              key={cat.id}
+              delay={(i % 3) * 0.06}
+              className="card p-6 transition-colors duration-300 hover:border-primary/40"
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <cat.icon size={17} aria-hidden />
+                </span>
+                <h3 className="text-base font-semibold">{t.skills.categories[cat.id]}</h3>
+              </div>
+              <ul className="space-y-3">
+                {cat.skills.map(({ name, nameKey, icon: Icon, color, level }) => (
+                  <li key={name} className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-3">
+                      <Icon className="h-4 w-4 shrink-0 text-fg" style={color ? { color } : undefined} aria-hidden />
+                      <span className="text-sm text-fg">{nameKey ? t.skills.names[nameKey] : name}</span>
+                    </span>
+                    {level && (
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${levelStyle[level]}`}>
+                        {t.levels[level]}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   )

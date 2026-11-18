@@ -3,72 +3,80 @@
 import { useState, useEffect } from 'react'
 import { m, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { useI18n } from '@/i18n/LanguageProvider'
+import LanguageToggle from '@/components/ui/LanguageToggle'
+import ThemeToggle from '@/components/ui/ThemeToggle'
+import type { Dictionary } from '@/locales'
 
-const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Research', href: '#research' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'DevOps', href: '#devops' },
-  { label: 'Contact', href: '#contact' },
+const navLinks: { id: keyof Dictionary['nav']['links']; href: string }[] = [
+  { id: 'about', href: '#about' },
+  { id: 'projects', href: '#projects' },
+  { id: 'experience', href: '#experience' },
+  { id: 'research', href: '#research' },
+  { id: 'skills', href: '#skills' },
+  { id: 'devops', href: '#devops' },
+  { id: 'contact', href: '#contact' },
 ]
 
 export default function Navbar() {
+  const { t } = useI18n()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const solid = scrolled || mobileOpen
+
   return (
-    <m.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#0B0B0F]/90 backdrop-blur-md border-b border-[#1E1E2E]'
-          : 'bg-transparent'
+    <nav
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        solid ? 'border-b border-line bg-bg/85 backdrop-blur-md' : 'border-b border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <m.a href="#" whileHover={{ scale: 1.05 }} className="flex items-center gap-1">
-            <span className="text-lg font-bold gradient-text">AS</span>
-            <span className="text-slate-600">.</span>
-          </m.a>
+      <div className="container-page flex h-16 items-center justify-between gap-4">
+        <a href="#" className="font-display text-lg font-bold" aria-label={t.ui.backToTop}>
+          <span className="gradient-text">AS</span>
+          <span className="text-accent">.</span>
+        </a>
 
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <m.a
-                key={link.label}
-                href={link.href}
-                whileHover={{ y: -1 }}
-                className="px-3 py-2 text-sm text-slate-500 hover:text-cyan-400 transition-colors duration-200 rounded-lg hover:bg-cyan-500/5"
-              >
-                {link.label}
-              </m.a>
-            ))}
+        <div className="hidden lg:flex items-center gap-1">
+          {navLinks.map((link) => (
             <a
-              href="#contact"
-              className="ml-3 px-4 py-1.5 text-sm font-medium text-cyan-400 border border-cyan-400/40 rounded-lg hover:bg-cyan-400/10 transition-all duration-200"
+              key={link.id}
+              href={link.href}
+              className="rounded-lg px-3 py-2 text-sm text-muted transition-colors hover:bg-fg/5 hover:text-fg"
             >
-              Hire Me
+              {t.nav.links[link.id]}
             </a>
+          ))}
+          <a href="#contact" className="btn-primary ml-2 px-4 py-2">
+            {t.nav.hireMe}
+          </a>
+          {/* Toggles sit last, at the right edge: changing language never moves them */}
+          <div className="ml-3 flex items-center gap-2 border-l border-line pl-3">
+            <LanguageToggle />
+            <ThemeToggle />
           </div>
+        </div>
 
+        {/* Mobile & tablet: both switches stay visible next to the menu button */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageToggle />
+          <ThemeToggle />
           <button
+            type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
-            aria-label="Toggle menu"
+            className="icon-btn"
+            aria-label={t.ui.toggleMenu}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileOpen ? <X size={20} aria-hidden /> : <Menu size={20} aria-hidden />}
           </button>
         </div>
       </div>
@@ -81,30 +89,30 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden border-t border-[#1E1E2E] bg-[#0B0B0F]/98 backdrop-blur-md overflow-hidden"
+            className="overflow-hidden border-t border-line bg-bg lg:hidden"
           >
-            <div className="px-4 py-4 flex flex-col gap-1">
+            <div className="container-page flex flex-col gap-1 py-4">
               {navLinks.map((link) => (
                 <a
-                  key={link.label}
+                  key={link.id}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="px-4 py-3 text-slate-400 hover:text-cyan-400 transition-colors rounded-lg hover:bg-cyan-500/5"
+                  className="rounded-lg px-3 py-3 text-muted transition-colors hover:bg-fg/5 hover:text-fg"
                 >
-                  {link.label}
+                  {t.nav.links[link.id]}
                 </a>
               ))}
-              <a
-                href="#contact"
-                className="mt-2 px-4 py-3 text-center text-sm font-medium text-cyan-400 border border-cyan-400/40 rounded-xl"
-                onClick={() => setMobileOpen(false)}
-              >
-                Hire Me
+              <div className="mt-2 flex items-center justify-between px-3">
+                <span className="text-sm text-subtle">{t.ui.language}</span>
+                <LanguageToggle />
+              </div>
+              <a href="#contact" onClick={() => setMobileOpen(false)} className="btn-primary mt-3">
+                {t.nav.hireMe}
               </a>
             </div>
           </m.div>
         )}
       </AnimatePresence>
-    </m.nav>
+    </nav>
   )
 }
