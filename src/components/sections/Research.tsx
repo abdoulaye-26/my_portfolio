@@ -1,207 +1,196 @@
 'use client'
 
-import { useRef } from 'react'
-import { m, useInView } from 'framer-motion'
 import {
   FlaskConical, GraduationCap, Microscope, Award, Languages, HeartHandshake, FileText, Target,
 } from 'lucide-react'
-import {
-  researchStatement, researchInterests, education, researchProjects,
-  certifications, languages, currentlyLearning, community,
-} from '@/content/research'
+import { researchInterests, education, researchProjects, currentlyLearning } from '@/content/research'
 import { cvs } from '@/content/profile'
+import { useI18n } from '@/i18n/LanguageProvider'
+import Reveal from '@/components/ui/Reveal'
+import SectionHeader from '@/components/ui/SectionHeader'
 
 function SubHeading({ icon: Icon, children }: { icon: typeof FlaskConical; children: React.ReactNode }) {
   return (
-    <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-5">
-      <Icon size={18} className="text-violet-400" aria-hidden />
+    <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold">
+      <Icon size={18} className="text-primary" aria-hidden />
       {children}
     </h3>
   )
 }
 
 export default function Research() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t, locale } = useI18n()
+  const r = t.research
+  const otherLocale = locale === 'fr' ? 'en' : 'fr'
 
   return (
-    <section id="research" className="py-28 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_20%_20%,rgba(139,92,246,0.07),transparent)]" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <m.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-        >
-          {/* Intro */}
-          <div className="text-center mb-14 max-w-3xl mx-auto">
-            <p className="section-number text-violet-400 mb-4">04. RESEARCH & EDUCATION</p>
-            <h2 className="text-4xl font-bold mb-5">
-              Towards a PhD in{' '}
-              <span className="gradient-text-ai">AI for Software Engineering</span>
-            </h2>
-            {researchStatement.map((p) => (
-              <p key={p} className="text-slate-400 leading-relaxed mb-3">
-                {p}
-              </p>
+    <section id="research" className="section">
+      <div className="container-page">
+        <SectionHeader eyebrow={r.eyebrow} title={r.title}>
+          <div className="mt-4 space-y-3 leading-relaxed text-muted">
+            {r.statement.map((p) => (
+              <p key={p}>{p}</p>
             ))}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href={cvs.academic.en}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-500 hover:bg-violet-400 text-white text-sm font-semibold transition-colors"
-              >
-                <FileText size={16} aria-hidden />
-                Academic CV (EN)
-              </a>
-              <a
-                href={cvs.academic.fr}
-                target="_blank"
-                rel="noopener noreferrer"
-                lang="fr"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-violet-500/40 text-violet-300 hover:bg-violet-500/10 text-sm font-medium transition-colors"
-              >
-                <FileText size={16} aria-hidden />
-                CV académique (FR)
-              </a>
-            </div>
           </div>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a href={cvs.academic[locale]} target="_blank" rel="noopener noreferrer" className="btn-primary">
+              <FileText size={16} aria-hidden />
+              {r.cvPrimary}
+            </a>
+            <a
+              href={cvs.academic[otherLocale]}
+              target="_blank"
+              rel="noopener noreferrer"
+              hrefLang={otherLocale}
+              className="btn-secondary"
+            >
+              <FileText size={16} aria-hidden />
+              {r.cvOther}
+            </a>
+          </div>
+        </SectionHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Left column: research */}
-            <div className="space-y-10">
-              <div>
-                <SubHeading icon={Target}>Research Interests</SubHeading>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {researchInterests.map((r) => (
-                    <li
-                      key={r.title}
-                      className={`card p-4 text-sm ${
-                        r.primary ? 'border-violet-500/40 bg-violet-500/[0.06] text-slate-100' : 'text-slate-300'
-                      }`}
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
+          {/* Left column: research */}
+          <div className="space-y-12">
+            <div>
+              <SubHeading icon={Target}>{r.interestsTitle}</SubHeading>
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {researchInterests.map((i, idx) => (
+                  <Reveal
+                    as="li"
+                    key={i.id}
+                    delay={idx * 0.05}
+                    className={`card p-4 text-sm ${
+                      i.primary ? 'border-primary/40 bg-primary/5 font-medium text-fg' : 'text-muted'
+                    }`}
+                  >
+                    {r.interests[i.id]}
+                    {i.primary && (
+                      <span className="mt-1 block text-xs font-normal text-primary">{r.primaryInterest}</span>
+                    )}
+                  </Reveal>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <SubHeading icon={Microscope}>{r.projectsTitle}</SubHeading>
+              <div className="space-y-4">
+                {researchProjects.map(({ id, stack }, idx) => {
+                  const p = r.projects[id]
+                  return (
+                    <Reveal
+                      as="article"
+                      key={id}
+                      delay={idx * 0.05}
+                      className="card p-5 transition-colors hover:border-primary/40"
                     >
-                      {r.title}
-                      {r.primary && (
-                        <span className="block text-xs text-violet-400 mt-1">Primary interest</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <SubHeading icon={Microscope}>Research & Technical Projects</SubHeading>
-                <div className="space-y-4">
-                  {researchProjects.map((p) => (
-                    <article key={p.title} className="card p-5 hover:border-violet-500/30 transition-colors">
-                      <div className="flex items-start justify-between gap-3 mb-1">
-                        <h4 className="font-semibold text-slate-200 text-sm">{p.title}</h4>
-                        {p.period && <span className="text-xs text-slate-500 shrink-0">{p.period}</span>}
+                      <div className="mb-1 flex items-start justify-between gap-3">
+                        <h4 className="text-sm font-semibold">{p.title}</h4>
+                        {p.period && <span className="shrink-0 font-mono text-xs text-subtle">{p.period}</span>}
                       </div>
-                      <p className="text-xs text-violet-400/80 mb-2">{p.context}</p>
-                      <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
+                      <p className="mb-2 text-xs font-medium text-primary">{p.context}</p>
+                      <p className="mb-3 text-sm leading-relaxed text-muted">{p.description}</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {p.stack.map((t) => (
-                          <span
-                            key={t}
-                            className="text-xs px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/20"
-                          >
-                            {t}
+                        {stack.map((tech) => (
+                          <span key={tech} className="chip">
+                            {tech}
                           </span>
                         ))}
                       </div>
-                    </article>
-                  ))}
-                </div>
+                    </Reveal>
+                  )
+                })}
               </div>
             </div>
+          </div>
 
-            {/* Right column: education & more */}
-            <div className="space-y-10">
-              <div>
-                <SubHeading icon={GraduationCap}>Education</SubHeading>
-                <div className="space-y-4">
-                  {education.map((edu) => (
-                    <div key={edu.degree} className="card p-5 hover:border-violet-500/20 transition-colors">
+          {/* Right column: education & more */}
+          <div className="space-y-12">
+            <div>
+              <SubHeading icon={GraduationCap}>{r.educationTitle}</SubHeading>
+              <div className="space-y-4">
+                {education.map(({ id, status }, idx) => {
+                  const edu = r.degrees[id]
+                  return (
+                    <Reveal key={id} delay={idx * 0.05} className="card p-5 transition-colors hover:border-primary/40">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h4 className="font-semibold text-slate-200 text-sm">{edu.degree}</h4>
-                          <p className="text-slate-500 text-xs mt-0.5">{edu.institution}</p>
-                          <p className="text-slate-500 text-xs mt-1">{edu.period}</p>
+                          <h4 className="text-sm font-semibold">{edu.degree}</h4>
+                          <p className="mt-0.5 text-xs text-subtle">{edu.institution}</p>
+                          <p className="mt-1 font-mono text-xs text-subtle">{edu.period}</p>
                         </div>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
-                            edu.status === 'In Progress'
-                              ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
-                              : 'bg-green-500/15 text-green-400 border border-green-500/30'
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                            status === 'inProgress'
+                              ? 'bg-primary/10 text-primary'
+                              : 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
                           }`}
                         >
-                          {edu.status}
+                          {r.status[status]}
                         </span>
                       </div>
                       {edu.details.length > 0 && (
                         <ul className="mt-3 space-y-1">
                           {edu.details.map((d) => (
-                            <li key={d} className="text-xs text-slate-400 flex items-start gap-2">
-                              <span className="text-violet-500 shrink-0" aria-hidden>·</span>
+                            <li key={d} className="flex items-start gap-2 text-xs text-muted">
+                              <span className="shrink-0 text-accent" aria-hidden>·</span>
                               {d}
                             </li>
                           ))}
                         </ul>
                       )}
-                    </div>
-                  ))}
-                </div>
+                    </Reveal>
+                  )
+                })}
               </div>
+            </div>
 
+            <Reveal>
+              <SubHeading icon={Award}>{r.certificationsTitle}</SubHeading>
+              <ul className="space-y-2">
+                {r.certifications.map((c) => (
+                  <li key={c.title} className="flex items-start justify-between gap-3 text-sm">
+                    <span>
+                      <span className="font-medium text-fg">{c.title}</span>
+                      <span className="text-subtle">, {c.issuer}</span>
+                    </span>
+                    <span className="shrink-0 font-mono text-xs text-subtle">{c.date}</span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
+            <Reveal className="grid grid-cols-1 gap-10 sm:grid-cols-2">
               <div>
-                <SubHeading icon={Award}>Certifications & Training</SubHeading>
-                <ul className="space-y-2">
-                  {certifications.map((c) => (
-                    <li key={c.title} className="flex items-start justify-between gap-3 text-sm">
-                      <span>
-                        <span className="text-slate-200">{c.title}</span>
-                        <span className="text-slate-500">, {c.issuer}</span>
-                      </span>
-                      <span className="text-xs text-slate-500 shrink-0">{c.date}</span>
+                <SubHeading icon={Languages}>{r.languagesTitle}</SubHeading>
+                <ul className="space-y-2 text-sm">
+                  {r.languages.map((l) => (
+                    <li key={l.name}>
+                      <span className="font-medium text-fg">{l.name}{t.ui.colon}</span>{' '}
+                      <span className="text-muted">{l.level}</span>
+                    </li>
+                  ))}
+                  <li className="pt-2 text-muted">
+                    <span className="font-medium text-fg">{r.currentlyLearning}</span> {currentlyLearning}
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <SubHeading icon={HeartHandshake}>{r.communityTitle}</SubHeading>
+                <ul className="space-y-2 text-sm">
+                  {r.community.map((c) => (
+                    <li key={c.title}>
+                      <span className="font-medium text-fg">{c.title}{t.ui.colon}</span>{' '}
+                      <span className="text-muted">{c.text}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div>
-                  <SubHeading icon={Languages}>Languages</SubHeading>
-                  <ul className="space-y-2 text-sm">
-                    {languages.map((l) => (
-                      <li key={l.name}>
-                        <span className="text-slate-200">{l.name}:</span>{' '}
-                        <span className="text-slate-400">{l.level}</span>
-                      </li>
-                    ))}
-                    <li className="pt-2 text-slate-400">
-                      <span className="text-slate-200">Currently learning:</span> {currentlyLearning}
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <SubHeading icon={HeartHandshake}>Community</SubHeading>
-                  <ul className="space-y-2 text-sm">
-                    {community.map((c) => (
-                      <li key={c.title}>
-                        <span className="text-slate-200">{c.title}:</span>{' '}
-                        <span className="text-slate-400">{c.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
+            </Reveal>
           </div>
-        </m.div>
+        </div>
       </div>
     </section>
   )

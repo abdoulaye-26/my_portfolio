@@ -1,125 +1,103 @@
 'use client'
 
-import { useRef } from 'react'
-import { m, useInView } from 'framer-motion'
 import { Briefcase, Trophy, FileText } from 'lucide-react'
-import { experiences, competitions } from '@/content/experience'
+import { experiences } from '@/content/experience'
 import { cvs } from '@/content/profile'
+import { useI18n } from '@/i18n/LanguageProvider'
+import Reveal from '@/components/ui/Reveal'
+import SectionHeader from '@/components/ui/SectionHeader'
 
 export default function Experience() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const { t, locale } = useI18n()
 
   return (
-    <section id="experience" className="py-28 relative bg-[#0D0D14]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <m.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="text-center mb-16">
-            <p className="section-number text-cyan-400 mb-4">03. EXPERIENCE</p>
-            <h2 className="text-4xl font-bold mb-4">
-              Where I&apos;ve <span className="gradient-text">worked</span>
-            </h2>
-            <a
-              href={cvs.professional.en}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-400 transition-colors"
-            >
-              <FileText size={15} aria-hidden />
-              Download the professional CV (PDF)
-            </a>
-          </div>
+    <section id="experience" className="section bg-surface-alt">
+      <div className="container-page">
+        <SectionHeader eyebrow={t.experience.eyebrow} title={t.experience.title}>
+          <a
+            href={cvs.professional[locale]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary mt-6"
+          >
+            <FileText size={15} aria-hidden />
+            {t.experience.downloadCv}
+          </a>
+        </SectionHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12">
-            {/* Work Experience */}
-            <div>
-              <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-8">
-                <Briefcase size={18} className="text-cyan-400" aria-hidden />
-                Work Experience
-              </h3>
-              <div className="relative">
-                <div className="absolute left-5 top-0 bottom-0 w-px bg-[#1E1E2E]" aria-hidden />
-                <ol className="space-y-7">
-                  {experiences.map((exp, i) => (
-                    <m.li
-                      key={exp.company}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
-                      className="relative flex gap-4 list-none"
-                    >
-                      <div className="relative z-10 w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
-                        <Briefcase size={14} className="text-cyan-400" aria-hidden />
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[3fr_2fr]">
+          {/* Work experience: timeline */}
+          <div>
+            <h3 className="mb-8 flex items-center gap-2 text-lg font-semibold">
+              <Briefcase size={18} className="text-primary" aria-hidden />
+              {t.experience.workTitle}
+            </h3>
+            <ol className="relative space-y-6 border-l border-line pl-6 sm:pl-8">
+              {experiences.map((exp, i) => {
+                const job = t.experience.jobs[exp.id]
+                return (
+                  <Reveal as="li" key={exp.id} delay={i * 0.05} className="relative">
+                    {/* Timeline dot */}
+                    <span
+                      aria-hidden
+                      className="absolute -left-[31px] top-6 h-3.5 w-3.5 rounded-full border-2 border-primary bg-bg sm:-left-[39px]"
+                    />
+                    <div className="card p-5 transition-colors hover:border-primary/40 sm:p-6">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <h4 className="text-base font-semibold">{exp.company}</h4>
+                        <span className="font-mono text-xs text-subtle">{job.period}</span>
                       </div>
-                      <div className="flex-1 card p-5 hover:border-cyan-500/20 transition-colors">
-                        <h4 className="font-semibold text-slate-200 text-sm">{exp.company}</h4>
-                        <p className="text-cyan-400 text-sm mt-0.5">{exp.role}</p>
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1 mb-3">
-                          <span>{exp.period}</span>
-                          <span aria-hidden>·</span>
-                          <span>{exp.location}</span>
-                        </div>
-                        <ul className="space-y-1.5 mb-3">
-                          {exp.highlights.map((h) => (
-                            <li key={h} className="text-xs text-slate-400 flex items-start gap-2">
-                              <span className="text-cyan-700 mt-0.5 shrink-0" aria-hidden>→</span>
-                              {h}
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="flex flex-wrap gap-1.5">
-                          {exp.stack.map((s) => (
-                            <span
-                              key={s}
-                              className="text-xs px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-500 border border-white/[0.07]"
-                            >
-                              {s}
-                            </span>
-                          ))}
-                        </div>
+                      <p className="mt-0.5 text-sm font-medium text-primary">{job.role}</p>
+                      <p className="mb-3 text-xs text-subtle">{job.location}</p>
+                      <ul className="mb-4 space-y-1.5">
+                        {job.highlights.map((h) => (
+                          <li key={h} className="flex items-start gap-2 text-sm text-muted">
+                            <span className="mt-0.5 shrink-0 text-accent" aria-hidden>→</span>
+                            {h}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.stack.map((s) => (
+                          <span key={s} className="chip">
+                            {s}
+                          </span>
+                        ))}
                       </div>
-                    </m.li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            {/* Competitions */}
-            <div>
-              <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-8">
-                <Trophy size={18} className="text-yellow-500" aria-hidden />
-                Hackathons, Competitions & Bootcamps
-              </h3>
-              <div className="space-y-3">
-                {competitions.map((h, i) => (
-                  <m.div
-                    key={h.title}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.4, delay: i * 0.08 }}
-                    className="card p-4 hover:border-yellow-500/20 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h4 className="font-semibold text-slate-200 text-sm">{h.title}</h4>
-                        <p className="text-yellow-500/70 text-xs mt-0.5">{h.organizer}</p>
-                        {h.note && (
-                          <p className="text-slate-500 text-xs mt-1 leading-relaxed">{h.note}</p>
-                        )}
-                      </div>
-                      {h.period && <span className="text-slate-500 text-xs shrink-0">{h.period}</span>}
                     </div>
-                  </m.div>
-                ))}
-              </div>
-            </div>
+                  </Reveal>
+                )
+              })}
+            </ol>
           </div>
-        </m.div>
+
+          {/* Competitions */}
+          <div>
+            <h3 className="mb-8 flex items-center gap-2 text-lg font-semibold">
+              <Trophy size={18} className="text-amber-600 dark:text-amber-400" aria-hidden />
+              {t.experience.competitionsTitle}
+            </h3>
+            <ul className="space-y-3">
+              {t.experience.competitions.map((h, i) => (
+                <Reveal
+                  as="li"
+                  key={h.title}
+                  delay={i * 0.04}
+                  className="card p-4 transition-colors hover:border-amber-500/40"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h4 className="text-sm font-semibold">{h.title}</h4>
+                      <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300/90">{h.organizer}</p>
+                      {h.note && <p className="mt-1.5 text-xs leading-relaxed text-muted">{h.note}</p>}
+                    </div>
+                    {h.period && <span className="shrink-0 font-mono text-xs text-subtle">{h.period}</span>}
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
   )

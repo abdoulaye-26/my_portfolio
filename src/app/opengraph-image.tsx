@@ -1,4 +1,10 @@
 import { ImageResponse } from 'next/og'
+import { dictionaries } from '@/locales'
+import { defaultLocale } from '@/i18n/config'
+import { profile } from '@/content/profile'
+
+// Share previews can only have one language: the site default (French).
+const t = dictionaries[defaultLocale]
 
 export const runtime = 'edge'
 export const size = { width: 1200, height: 630 }
@@ -31,16 +37,16 @@ export default function OpengraphImage() {
             marginBottom: 28,
           }}
         >
-          Full-Stack & DevOps Developer
+          {t.profile.headline}
         </div>
         <div style={{ display: 'flex', fontSize: 92, fontWeight: 800, color: 'white' }}>
-          Abdoulaye Sène
+          {profile.name}
         </div>
         <div style={{ display: 'flex', fontSize: 34, color: '#94A3B8', marginTop: 28 }}>
-          Websites & web apps, from code to production
+          {t.meta.ogTagline}
         </div>
         <div style={{ display: 'flex', fontSize: 24, color: '#64748B', marginTop: 48 }}>
-          Freelance · Full-time · PhD 2027–2028 · Malika, Dakar
+          {t.meta.ogFooter}
         </div>
       </div>
     ),

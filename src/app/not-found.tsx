@@ -1,20 +1,21 @@
+'use client'
+
 import Link from 'next/link'
+import { useI18n } from '@/i18n/LanguageProvider'
+import Rich from '@/components/ui/Rich'
 
 export default function NotFound() {
+  const { t } = useI18n()
+
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center px-4">
-      <p className="section-number text-cyan-400 mb-4">404</p>
-      <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-        This page <span className="gradient-text">doesn&apos;t exist</span>
+    <section className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+      <p className="eyebrow mb-4">404</p>
+      <h1 className="mb-4 text-4xl font-bold sm:text-5xl">
+        <Rich text={t.notFound.title} strongClassName="gradient-text" />
       </h1>
-      <p className="text-slate-400 max-w-md mb-8">
-        The page you&apos;re looking for was moved, deleted, or never existed.
-      </p>
-      <Link
-        href="/"
-        className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition-colors duration-200"
-      >
-        Back to home
+      <p className="mb-8 max-w-md text-muted">{t.notFound.text}</p>
+      <Link href="/" className="btn-primary px-6 py-3">
+        {t.notFound.back}
       </Link>
     </section>
   )
