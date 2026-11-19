@@ -11,8 +11,8 @@ export const profile = {
   email: 'seneabdoulaye124@gmail.com',
   phoneDisplay: '+221 77 114 59 85',
   whatsapp: 'https://wa.me/221771145985',
-  github: 'https://github.com/abdoulaye-96',
-  githubHandle: '@abdoulaye-96',
+  github: 'https://github.com/abdoulaye-26',
+  githubHandle: '@abdoulaye-26',
   linkedin: 'https://www.linkedin.com/in/abdoulaye-sene-707801203/',
   linkedinHandle: 'in/abdoulaye-sene-707801203',
 } as const

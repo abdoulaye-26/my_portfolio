@@ -83,7 +83,7 @@ export const projects: Project[] = [
     tags: ['Education', 'Hackathon', 'Social impact'],
     gradient: 'from-yellow-600 to-amber-500',
     stack: [REACT, NODE, { name: 'Express 5', color: '#9CA3AF' }, MONGO, { name: 'JWT', color: '#F472B6' }],
-    github: 'https://github.com/abdoulaye-96/SmartBibliothequeBanlieue',
+    github: 'https://github.com/abdoulaye-26/SmartBibliothequeBanlieue',
   },
   {
     id: 'taskflow',
@@ -99,14 +99,14 @@ export const projects: Project[] = [
     stack: [NODE, EXPRESS, MONGO, REACT],
     // My commits live on team branches that were never merged into `main`,
     // so this link filters the team repo down to my own commits.
-    github: 'https://github.com/Fatmata-Dev/EasyService-frontend/commits/Fadiaba/?author=abdoulaye-96',
+    github: 'https://github.com/Fatmata-Dev/EasyService-frontend/commits/Fadiaba/?author=abdoulaye-26',
   },
   {
     id: 'hotel',
     tags: ['Hospitality', 'React', 'Node.js', 'MongoDB'],
     gradient: 'from-teal-600 to-cyan-600',
     stack: [REACT, NODE, EXPRESS, MONGO],
-    github: 'https://github.com/abdoulaye-96/gestionHotel',
+    github: 'https://github.com/abdoulaye-26/gestionHotel',
   },
   {
     id: 'learn-easy',
@@ -114,6 +114,6 @@ export const projects: Project[] = [
     gradient: 'from-violet-600 to-indigo-600',
     // Repo languages: Python + HTML (Django with server-rendered templates)
     stack: [{ name: 'Django', color: '#44B78B' }, { name: 'Python', color: '#FFD43B' }, { name: 'HTML templates', color: '#E34F26' }],
-    github: 'https://github.com/abdoulaye-96/learn-easy',
+    github: 'https://github.com/abdoulaye-26/learn-easy',
   },
 ]
